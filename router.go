@@ -5,6 +5,8 @@ import (
 	"github.com/labstack/echo"
 )
 
+const DefaultOpenAPIVersion = "3.0.0"
+
 type Router struct {
 	*echo.Echo
 	OpenAPI *openapi3.Swagger
@@ -16,7 +18,7 @@ type RouteGroup struct {
 }
 
 func NewRouter() *Router {
-	return &Router{Echo: echo.New(), OpenAPI: &openapi3.Swagger{}}
+	return &Router{Echo: echo.New(), OpenAPI: &openapi3.Swagger{OpenAPI: DefaultOpenAPIVersion}}
 }
 
 func (r *Router) Group(path string, mw ...echo.MiddlewareFunc) *RouteGroup {
