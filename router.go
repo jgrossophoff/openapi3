@@ -15,6 +15,7 @@ type Router struct {
 type RouteGroup struct {
 	*echo.Group
 	OpenAPI *openapi3.Swagger
+	prefix  string
 }
 
 func NewRouter() *Router {
@@ -22,14 +23,14 @@ func NewRouter() *Router {
 }
 
 func (r *Router) Group(path string, mw ...echo.MiddlewareFunc) *RouteGroup {
-	return &RouteGroup{r.Echo.Group(path, mw...), r.OpenAPI}
+	return &RouteGroup{r.Echo.Group(path, mw...), r.OpenAPI, path}
 }
 
 // SubGroup can be used to create a Group from a Group.
 // This method is simply named Group in the Echo library but has to
 // be renamed to not clash with the embedded Group object.
 func (r *RouteGroup) SubGroup(path string, mw ...echo.MiddlewareFunc) *RouteGroup {
-	return &RouteGroup{r.Group.Group(path, mw...), r.OpenAPI}
+	return &RouteGroup{r.Group.Group(path, mw...), r.OpenAPI, r.prefix + path}
 }
 
 func (s *Router) GET(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
@@ -41,7 +42,7 @@ func (s *Router) GET(path string, handler echo.HandlerFunc, op *openapi3.Operati
 func (s *RouteGroup) GET(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.GET(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "GET", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "GET", op)
 	}
 }
 
@@ -54,7 +55,7 @@ func (s *Router) POST(path string, handler echo.HandlerFunc, op *openapi3.Operat
 func (s *RouteGroup) POST(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.POST(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "POST", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "POST", op)
 	}
 }
 
@@ -67,7 +68,7 @@ func (s *Router) PUT(path string, handler echo.HandlerFunc, op *openapi3.Operati
 func (s *RouteGroup) PUT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.PUT(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "PUT", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "PUT", op)
 	}
 }
 
@@ -80,7 +81,7 @@ func (s *Router) PATCH(path string, handler echo.HandlerFunc, op *openapi3.Opera
 func (s *RouteGroup) PATCH(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.PATCH(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "PATCH", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "PATCH", op)
 	}
 }
 
@@ -93,7 +94,7 @@ func (s *Router) DELETE(path string, handler echo.HandlerFunc, op *openapi3.Oper
 func (s *RouteGroup) DELETE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.DELETE(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "DELETE", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "DELETE", op)
 	}
 }
 
@@ -106,7 +107,7 @@ func (s *Router) CONNECT(path string, handler echo.HandlerFunc, op *openapi3.Ope
 func (s *RouteGroup) CONNECT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.CONNECT(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "CONNECT", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "CONNECT", op)
 	}
 }
 
@@ -119,7 +120,7 @@ func (s *Router) HEAD(path string, handler echo.HandlerFunc, op *openapi3.Operat
 func (s *RouteGroup) HEAD(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.HEAD(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "HEAD", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "HEAD", op)
 	}
 }
 
@@ -132,7 +133,7 @@ func (s *Router) OPTIONS(path string, handler echo.HandlerFunc, op *openapi3.Ope
 func (s *RouteGroup) OPTIONS(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.OPTIONS(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "OPTIONS", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "OPTIONS", op)
 	}
 }
 
@@ -145,7 +146,7 @@ func (s *Router) TRACE(path string, handler echo.HandlerFunc, op *openapi3.Opera
 func (s *RouteGroup) TRACE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.TRACE(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "TRACE", op)
+		s.OpenAPI.AddOperation(s.prefix+path, "TRACE", op)
 	}
 }
 
@@ -158,6 +159,6 @@ func (s *Router) Any(path, swaggerMethod string, handler echo.HandlerFunc, op *o
 func (s *RouteGroup) Any(path, swaggerMethod string, handler echo.HandlerFunc, op *openapi3.Operation) {
 	s.Group.Any(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, swaggerMethod, op)
+		s.OpenAPI.AddOperation(s.prefix+path, swaggerMethod, op)
 	}
 }
