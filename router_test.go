@@ -7,7 +7,7 @@ import (
 )
 
 func TestRouter(t *testing.T) {
-	r := NewRouter()
+	r := NewEcho()
 	r.GET("/", func(ctx echo.Context) error {
 		return nil
 	}, nil)

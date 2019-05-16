@@ -7,158 +7,158 @@ import (
 
 const DefaultOpenAPIVersion = "3.0.0"
 
-type Router struct {
+type Echo struct {
 	*echo.Echo
 	OpenAPI *openapi3.Swagger
 }
 
-type RouteGroup struct {
+type EchoGroup struct {
 	*echo.Group
 	OpenAPI *openapi3.Swagger
 	prefix  string
 }
 
-func NewRouter() *Router {
-	return &Router{Echo: echo.New(), OpenAPI: &openapi3.Swagger{OpenAPI: DefaultOpenAPIVersion}}
+func NewEcho() *Echo {
+	return &Echo{Echo: echo.New(), OpenAPI: &openapi3.Swagger{OpenAPI: DefaultOpenAPIVersion}}
 }
 
-func (r *Router) Group(path string, mw ...echo.MiddlewareFunc) *RouteGroup {
-	return &RouteGroup{r.Echo.Group(path, mw...), r.OpenAPI, path}
+func (r *Echo) Group(path string, mw ...echo.MiddlewareFunc) *EchoGroup {
+	return &EchoGroup{r.Echo.Group(path, mw...), r.OpenAPI, path}
 }
 
 // SubGroup can be used to create a Group from a Group.
 // This method is simply named Group in the Echo library but has to
 // be renamed to not clash with the embedded Group object.
-func (r *RouteGroup) SubGroup(path string, mw ...echo.MiddlewareFunc) *RouteGroup {
-	return &RouteGroup{r.Group.Group(path, mw...), r.OpenAPI, r.prefix + path}
+func (r *EchoGroup) SubGroup(path string, mw ...echo.MiddlewareFunc) *EchoGroup {
+	return &EchoGroup{r.Group.Group(path, mw...), r.OpenAPI, r.prefix + path}
 }
 
-func (s *Router) GET(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.GET(path, handler)
+func (e *Echo) GET(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.GET(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "GET", op)
+		e.OpenAPI.AddOperation(path, "GET", op)
 	}
 }
-func (s *RouteGroup) GET(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.GET(path, handler)
+func (e *EchoGroup) GET(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.GET(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "GET", op)
-	}
-}
-
-func (s *Router) POST(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.POST(path, handler)
-	if op != nil {
-		s.OpenAPI.AddOperation(path, "POST", op)
-	}
-}
-func (s *RouteGroup) POST(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.POST(path, handler)
-	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "POST", op)
+		e.OpenAPI.AddOperation(e.prefix+path, "GET", op)
 	}
 }
 
-func (s *Router) PUT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.PUT(path, handler)
+func (e *Echo) POST(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.POST(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "PUT", op)
+		e.OpenAPI.AddOperation(path, "POST", op)
 	}
 }
-func (s *RouteGroup) PUT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.PUT(path, handler)
+func (e *EchoGroup) POST(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.POST(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "PUT", op)
-	}
-}
-
-func (s *Router) PATCH(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.PATCH(path, handler)
-	if op != nil {
-		s.OpenAPI.AddOperation(path, "PATCH", op)
-	}
-}
-func (s *RouteGroup) PATCH(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.PATCH(path, handler)
-	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "PATCH", op)
+		e.OpenAPI.AddOperation(e.prefix+path, "POST", op)
 	}
 }
 
-func (s *Router) DELETE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.DELETE(path, handler)
+func (e *Echo) PUT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.PUT(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "DELETE", op)
+		e.OpenAPI.AddOperation(path, "PUT", op)
 	}
 }
-func (s *RouteGroup) DELETE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.DELETE(path, handler)
+func (e *EchoGroup) PUT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.PUT(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "DELETE", op)
-	}
-}
-
-func (s *Router) CONNECT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.CONNECT(path, handler)
-	if op != nil {
-		s.OpenAPI.AddOperation(path, "CONNECT", op)
-	}
-}
-func (s *RouteGroup) CONNECT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.CONNECT(path, handler)
-	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "CONNECT", op)
+		e.OpenAPI.AddOperation(e.prefix+path, "PUT", op)
 	}
 }
 
-func (s *Router) HEAD(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.HEAD(path, handler)
+func (e *Echo) PATCH(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.PATCH(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "HEAD", op)
+		e.OpenAPI.AddOperation(path, "PATCH", op)
 	}
 }
-func (s *RouteGroup) HEAD(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.HEAD(path, handler)
+func (e *EchoGroup) PATCH(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.PATCH(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "HEAD", op)
-	}
-}
-
-func (s *Router) OPTIONS(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.OPTIONS(path, handler)
-	if op != nil {
-		s.OpenAPI.AddOperation(path, "OPTIONS", op)
-	}
-}
-func (s *RouteGroup) OPTIONS(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.OPTIONS(path, handler)
-	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "OPTIONS", op)
+		e.OpenAPI.AddOperation(e.prefix+path, "PATCH", op)
 	}
 }
 
-func (s *Router) TRACE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.TRACE(path, handler)
+func (e *Echo) DELETE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.DELETE(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, "TRACE", op)
+		e.OpenAPI.AddOperation(path, "DELETE", op)
 	}
 }
-func (s *RouteGroup) TRACE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.TRACE(path, handler)
+func (e *EchoGroup) DELETE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.DELETE(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, "TRACE", op)
+		e.OpenAPI.AddOperation(e.prefix+path, "DELETE", op)
 	}
 }
 
-func (s *Router) Any(path, swaggerMethod string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Echo.Any(path, handler)
+func (e *Echo) CONNECT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.CONNECT(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(path, swaggerMethod, op)
+		e.OpenAPI.AddOperation(path, "CONNECT", op)
 	}
 }
-func (s *RouteGroup) Any(path, swaggerMethod string, handler echo.HandlerFunc, op *openapi3.Operation) {
-	s.Group.Any(path, handler)
+func (e *EchoGroup) CONNECT(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.CONNECT(path, handler)
 	if op != nil {
-		s.OpenAPI.AddOperation(s.prefix+path, swaggerMethod, op)
+		e.OpenAPI.AddOperation(e.prefix+path, "CONNECT", op)
+	}
+}
+
+func (e *Echo) HEAD(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.HEAD(path, handler)
+	if op != nil {
+		e.OpenAPI.AddOperation(path, "HEAD", op)
+	}
+}
+func (e *EchoGroup) HEAD(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.HEAD(path, handler)
+	if op != nil {
+		e.OpenAPI.AddOperation(e.prefix+path, "HEAD", op)
+	}
+}
+
+func (e *Echo) OPTIONS(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.OPTIONS(path, handler)
+	if op != nil {
+		e.OpenAPI.AddOperation(path, "OPTIONS", op)
+	}
+}
+func (e *EchoGroup) OPTIONS(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.OPTIONS(path, handler)
+	if op != nil {
+		e.OpenAPI.AddOperation(e.prefix+path, "OPTIONS", op)
+	}
+}
+
+func (e *Echo) TRACE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.TRACE(path, handler)
+	if op != nil {
+		e.OpenAPI.AddOperation(path, "TRACE", op)
+	}
+}
+func (e *EchoGroup) TRACE(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.TRACE(path, handler)
+	if op != nil {
+		e.OpenAPI.AddOperation(e.prefix+path, "TRACE", op)
+	}
+}
+
+func (e *Echo) Any(path, swaggerMethod string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Echo.Any(path, handler)
+	if op != nil {
+		e.OpenAPI.AddOperation(path, swaggerMethod, op)
+	}
+}
+func (e *EchoGroup) Any(path, swaggerMethod string, handler echo.HandlerFunc, op *openapi3.Operation) {
+	e.Group.Any(path, handler)
+	if op != nil {
+		e.OpenAPI.AddOperation(e.prefix+path, swaggerMethod, op)
 	}
 }
