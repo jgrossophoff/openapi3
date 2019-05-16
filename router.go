@@ -10,6 +10,11 @@ type Router struct {
 	OpenAPI *openapi3.Swagger
 }
 
+type RouteGroup struct {
+	*echo.Group
+	OpenAPI *openapi3.Swagger
+}
+
 func NewRouter() *Router {
 	return &Router{Echo: echo.New(), OpenAPI: &openapi3.Swagger{}}
 }
@@ -18,9 +23,11 @@ func (r *Router) Group(path string, mw ...echo.MiddlewareFunc) *RouteGroup {
 	return &RouteGroup{r.Echo.Group(path, mw...), r.OpenAPI}
 }
 
-type RouteGroup struct {
-	*echo.Group
-	OpenAPI *openapi3.Swagger
+// SubGroup can be used to create a Group from a Group.
+// This method is simply named Group in the Echo library but has to
+// be renamed to not clash with the embedded Group object.
+func (r *RouteGroup) SubGroup(path string, mw ...echo.MiddlewareFunc) *RouteGroup {
+	return &RouteGroup{r.Group.Group(path, mw...), r.OpenAPI}
 }
 
 func (s *Router) GET(path string, handler echo.HandlerFunc, op *openapi3.Operation) {
